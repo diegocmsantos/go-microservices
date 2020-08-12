@@ -1,22 +1,26 @@
 package domains
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetUserNoUserFound(t *testing.T) {
 	userID := int64(0)
 	user, err := GetUser(userID)
-	if user != nil {
-		t.Error("User not expected")
-	}
 
-	if err == nil {
-		t.Errorf("Expecting an error when passing a invalid userID like %d", userID)
-	}
+	assert.Nil(t, user, fmt.Sprintf("User with id [%d] is not expected", userID))
+	assert.NotNil(t, err)
+	assert.Equal(t, http.StatusNotFound, err.StatusCode)
+}
 
-	if err.StatusCode != http.StatusNotFound {
-		t.Errorf("Status Code error must be: %d", err.StatusCode)
-	}
+func TestGetUserUserFound(t *testing.T) {
+	userID := int64(1)
+	user, err := GetUser(userID)
+
+	assert.NotNil(t, user, fmt.Sprintf("User with id [%d] is expected", userID))
+	assert.Nil(t, err)
 }
