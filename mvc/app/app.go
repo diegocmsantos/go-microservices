@@ -2,18 +2,21 @@ package app
 
 import (
 	"fmt"
-	"go-microservices/mvc/controllers"
-	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func StartApp() {
-	http.HandleFunc("/users", controllers.GetUser)
-	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("teste"))
-	})
+var router *gin.Engine
 
-	fmt.Println("Server up and running on port 3000")
-	if err := http.ListenAndServe(":3000", nil); err != nil {
+func init() {
+	router = gin.Default()
+}
+
+// StartApp is the entrypoint of this application
+func StartApp() {
+	mapUrls()
+	if err := router.Run(":3000"); err != nil {
 		panic(err)
 	}
+	fmt.Println("Server up and running on port 3000")
 }

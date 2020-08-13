@@ -1,35 +1,34 @@
 package controllers
 
 import (
-	"encoding/json"
+	"fmt"
 	"go-microservices/mvc/services"
 	"go-microservices/mvc/utils"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 // GetUser is controller to get a single User based on its user ID
-func GetUser(w http.ResponseWriter, r *http.Request) {
-	userID, err := strconv.ParseInt(r.URL.Query().Get("user_id"), 10, 64)
+func GetUser(c *gin.Context) {
+	userIDStr := c.Param("user_id")
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
 	if err != nil {
 		apiError := utils.CreateError(
-			"userID must be a number",
+			fmt.Sprintf("%s must be a number", userIDStr),
 			http.StatusBadRequest,
 			"bad_request")
-		jsonValue, _ := json.Marshal(apiError)
-		w.WriteHeader(apiError.StatusCode)
-		w.Write(jsonValue)
+
+		c.JSON(http.StatusBadRequest, apiError)
 		return
 	}
 
-	user, apiError := services.GetUser(userID)
+	user, apiError := services.UserService.GetUser(userID)
 	if apiError != nil {
-		jsonValue, _ := json.Marshal(apiError)
-		w.WriteHeader(apiError.StatusCode)
-		w.Write(jsonValue)
+		c.JSON(apiError.StatusCode, apiError)
 		return
 	}
 
-	jsonValue, _ := json.Marshal(user)
-	w.Write([]byte(jsonValue))
+	c.JSON(http.StatusOK, user)
 }
