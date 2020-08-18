@@ -13,7 +13,7 @@ import (
 const (
 	headerAuthorization       = "Authorization"
 	headerAuthorizationFormat = "token %s"
-	urlCreateRepo             = "https://api.github.com/user/repos"
+	UrlCreateRepo             = "https://api.github.com/user/repos"
 )
 
 func getAuthorizationHeader(accessToken string) string {
@@ -23,7 +23,7 @@ func getAuthorizationHeader(accessToken string) string {
 func CreateRepo(accessToken string, request github.CreateRepoRequestBody) (*github.CreateRepoResponseBody, *github.GithubErrorResponse) {
 	headers := http.Header{}
 	headers.Set(headerAuthorization, getAuthorizationHeader(accessToken))
-	response, err := restclient.Post(urlCreateRepo, request, headers)
+	response, err := restclient.Post(UrlCreateRepo, request, headers)
 	if err != nil {
 		log.Printf("error trying to creating new repo in github: %s", err.Error())
 		return nil, &github.GithubErrorResponse{
